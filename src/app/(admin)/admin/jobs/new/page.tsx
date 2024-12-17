@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -9,18 +10,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { jobSchema, TJobSchema } from "@/schema/jobss.schema";
-import CloudinaryUpload from "@/cloudinary/CloudinaryUpload";
 import { addJobs } from "@/server/actions/jobs/jobs.action";
-import ReactQuill from "react-quill-new";
-import "react-quill/dist/quill.snow.css";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label"; // Importing Label from shadcn
+import { Label } from "@/components/ui/label";
+import dynamic from "next/dynamic";
+import CloudinaryUpload from "@/cloudinary/CloudinaryUpload";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+
+const Select = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.Select),
+  { ssr: false }
+);
+const SelectContent = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectContent),
+  { ssr: false }
+);
+const SelectItem = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectItem),
+  { ssr: false }
+);
+const SelectTrigger = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectTrigger),
+  { ssr: false }
+);
+const SelectValue = dynamic(
+  () => import("@/components/ui/select").then((mod) => mod.SelectValue),
+  { ssr: false }
+);
 
 const Page = () => {
   const [body, setBody] = useState("");
@@ -46,9 +62,14 @@ const Page = () => {
     if (body.length > 0) {
       trigger("description");
     }
-  }, [body]);
+  }, [body, setValue, trigger]);
 
   const onSubmit = async (data: TJobSchema) => {
+    if (!image) {
+      toast.error("Please upload a company logo");
+      return;
+    }
+
     const folder = "jobs";
     const { public_id, secure_url } = await CloudinaryUpload({ image, folder });
 
@@ -70,7 +91,7 @@ const Page = () => {
     <div>
       <div className="relative py-8">
         <Image
-          src={imgUrl ? imgUrl : "/placeholder.webp"}
+          src={imgUrl || "/placeholder.webp"}
           alt="Job Image"
           height={300}
           width={300}
