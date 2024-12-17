@@ -135,10 +135,15 @@ export default async function page({ params }: { params: { id: string } }) {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">
-                  Ipsum dolor ipsum accusam stet et et diam dolores, sed rebum
-                  sadipscing elitr vero dolores. Lorem dolore elitr justo et no
-                  gubergren sadipscing, ipsum et takimata aliquyam et rebum est
-                  ipsum lorem diam.
+                  At {company}, we are committed to delivering innovative
+                  solutions that drive growth and success. Our team of experts
+                  works tirelessly to provide top-quality services and products
+                  that meet the evolving needs of our clients. With a focus on
+                  excellence, integrity, and customer satisfaction, we aim to
+                  build lasting partnerships and create value for businesses
+                  across diverse industries. Whether you’re looking for reliable
+                  products or professional services, {company} is here to help
+                  you achieve your goals.
                 </p>
               </CardContent>
             </Card>

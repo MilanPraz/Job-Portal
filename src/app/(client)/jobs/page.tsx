@@ -1,8 +1,13 @@
-import AllJobs from "@/components/jobs/AllJobs";
 import Jobss from "@/server/models/job";
 import connectDB from "@/server/utils/ConnectDB";
 import React from "react";
 
+import dynamic from "next/dynamic";
+
+const AllJobs = dynamic(() => import("@/components/jobs/AllJobs"), {
+  ssr: false,
+});
+// import AllJobs from "@/components/jobs/AllJobs";
 export const revalidate = 3600; //revalidate every hour
 
 export default async function page() {

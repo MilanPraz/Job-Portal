@@ -85,7 +85,10 @@ export function Navbar() {
             <nav className="hidden md:flex">
               <ul className=" flex gap-8  items-center">
                 {navLinks.map((l) => {
-                  const isActive = pathname == l.to;
+                  const isActive =
+                    pathname === l.to ||
+                    (pathname.startsWith("/jobs/") && l.to === "/jobs");
+
                   return (
                     <li
                       className={` ${
@@ -137,9 +140,12 @@ export function Navbar() {
         <nav className="">
           <ul className=" flex flex-col gap-8  items-center">
             {navLinks.map((l) => {
-              const isActive = pathname == l.to;
+              const isActive =
+                pathname == l.to ||
+                (pathname.startsWith("/jobs/") && l.to === "/jobs");
               return (
                 <li
+                  onClick={() => setIsMenuOpen(false)}
                   className={` ${
                     isActive
                       ? "text-primary underline underline-offset-4"

@@ -1,6 +1,6 @@
 "use client";
 import CustomBreadCrumb from "@/components/navigation/BreadCrumb";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -43,16 +43,28 @@ export interface Job {
 
 const ITEMS_PER_PAGE = 5;
 
-export default function AllJobs({ jobs }: { jobs: string }) {
+export default function AllJobs({
+  jobs,
+  initialCategory,
+}: {
+  jobs: any;
+  initialCategory?: string;
+}) {
   const [activeTab, setActiveTab] = useState<JobType>("On-site");
-  const { toggleFavorite, favorites } = useJobContext();
+  const { toggleFavorite, favorites, selectedCategory, setSelectedCategory } =
+    useJobContext();
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const jobsObjects = JSON.parse(jobs);
 
   const filteredJobs = useMemo(() => {
-    return jobsObjects.filter((job: any) => job.jobType === activeTab);
-  }, [jobsObjects, activeTab]);
+    return jobsObjects.filter(
+      (job: TJob) =>
+        (selectedCategory ? job.category === selectedCategory : true) &&
+        job.jobType === activeTab
+    );
+  }, [jobs, activeTab, selectedCategory]);
 
   const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
 
@@ -65,10 +77,48 @@ export default function AllJobs({ jobs }: { jobs: string }) {
     setCurrentPage(page);
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, activeTab]);
+
   return (
     <div className=" ">
       <CustomBreadCrumb title="job list" subRoot1="job list" />
       <section className="py-16 md:py-24 xl:container px-4">
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold mb-4">Filter by Category:</h3>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => setSelectedCategory(null)}
+              variant={selectedCategory === null ? "default" : "outline"}
+            >
+              All
+            </Button>
+            {[
+              "marketing",
+              "customer-service",
+              "human-resource",
+              "project-management",
+              "business-development",
+              "sales&communication",
+              "teaching&education",
+              "design&creative",
+              "information&technology",
+            ].map((category) => (
+              <Button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                variant={selectedCategory === category ? "default" : "outline"}
+              >
+                {category
+                  .replace(/&/g, " & ")
+                  .split("-")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
+              </Button>
+            ))}
+          </div>
+        </div>
         <div className=" ">
           <div className="flex flex-col items-center space-y-8">
             <motion.h2
@@ -179,51 +229,60 @@ export default function AllJobs({ jobs }: { jobs: string }) {
                         </Card>
                       </motion.div>
                     ))}
+                    {currentJobs.length <= 0 && (
+                      <div className="text-center text-red-400 my-20">
+                        No such job found!
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               ))}
             </Tabs>
 
             {/* Pagination */}
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={() =>
-                      handlePageChange(Math.max(1, currentPage - 1))
-                    }
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-                {[...Array(totalPages)].map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
+            {currentJobs.length > 0 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
                       href="#"
-                      onClick={() => handlePageChange(i + 1)}
-                      isActive={currentPage === i + 1}
-                    >
-                      {i + 1}
-                    </PaginationLink>
+                      onClick={() =>
+                        handlePageChange(Math.max(1, currentPage - 1))
+                      }
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
                   </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={() =>
-                      handlePageChange(Math.min(totalPages, currentPage + 1))
-                    }
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        href="#"
+                        onClick={() => handlePageChange(i + 1)}
+                        isActive={currentPage === i + 1}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={() =>
+                        handlePageChange(Math.min(totalPages, currentPage + 1))
+                      }
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
         </div>
       </section>

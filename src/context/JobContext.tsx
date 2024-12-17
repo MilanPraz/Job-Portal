@@ -11,14 +11,16 @@ import {
 interface TJobContext {
   favorites: Set<number>;
   toggleFavorite: (jobId: number) => void;
+  selectedCategory: string | null;
+  setSelectedCategory: (category: string | null) => void;
 }
-
 const JobContext = createContext<TJobContext | undefined>(undefined);
 
 export const JobProvider = ({ children }: { children: ReactNode }) => {
   // const saved = localStorage.getItem("jobFavorites");
   // const savedSets: number[] = saved ? JSON.parse(saved) : [];
   // const savedFavs = new Set<number>(savedSets);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
@@ -48,7 +50,14 @@ export const JobProvider = ({ children }: { children: ReactNode }) => {
   }, [favorites]);
 
   return (
-    <JobContext.Provider value={{ favorites, toggleFavorite }}>
+    <JobContext.Provider
+      value={{
+        favorites,
+        toggleFavorite,
+        selectedCategory,
+        setSelectedCategory,
+      }}
+    >
       {children}
     </JobContext.Provider>
   );

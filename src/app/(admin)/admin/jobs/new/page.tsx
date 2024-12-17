@@ -16,6 +16,7 @@ import dynamic from "next/dynamic";
 import CloudinaryUpload from "@/cloudinary/CloudinaryUpload";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
 
 const Select = dynamic(
   () => import("@/components/ui/select").then((mod) => mod.Select),
