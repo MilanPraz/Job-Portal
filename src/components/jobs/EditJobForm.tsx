@@ -10,19 +10,12 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { jobSchema, TJobSchema } from "@/schema/jobss.schema";
 import CloudinaryUpload from "@/cloudinary/CloudinaryUpload";
-import { addJobs, updateJob } from "@/server/actions/jobs/jobs.action";
+import { updateJob } from "@/server/actions/jobs/jobs.action";
 import ReactQuill from "react-quill-new";
 import "react-quill/dist/quill.snow.css";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label"; // Importing Label from shadcn
+import { Label } from "@/components/ui/label";
 
-const EditJobForm = ({ job }: { job: any }) => {
+const EditJobForm = ({ job }: { job: string }) => {
   const jobObject = JSON.parse(job);
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -43,15 +36,12 @@ const EditJobForm = ({ job }: { job: any }) => {
     formState: { errors, isSubmitting },
   } = useForm<TJobSchema>({ resolver: zodResolver(jobSchema) });
 
-  //   populate
-
   useEffect(() => {
     setValue("company", jobObject.company);
     setValue("title", jobObject.title);
     setValue("location", jobObject.location);
     setValue("jobType", jobObject.jobType);
     setValue("category", jobObject.category);
-    setValue("company", jobObject.company);
     setValue("applicationDeadline", jobObject.applicationDeadline);
     setValue("vacancies", jobObject.vacancies);
     setValue("description", jobObject.description);
@@ -64,7 +54,7 @@ const EditJobForm = ({ job }: { job: any }) => {
     if (body.length > 0) {
       trigger("description");
     }
-  }, [body]);
+  }, [body, setValue, trigger]);
 
   const onSubmit = async (data: TJobSchema) => {
     if (!image) {
@@ -91,20 +81,13 @@ const EditJobForm = ({ job }: { job: any }) => {
         toast.success("Job is Updated!");
       }
     }
-    // toast({
-    //   title: res.success ? "Success !!" : "Error !!",
-    //   description: res.message,
-    //   variant: res.success ? "success" : "destructive",
-    // });
-
-    // if (res.success) return router.push("/admin/jobs");
   };
 
   return (
     <div>
       <div className="relative py-8">
         <Image
-          src={imgUrl ? imgUrl : "/placeholder.webp"}
+          src={imgUrl || "/placeholder.webp"}
           alt="Job Image"
           height={300}
           width={300}
@@ -176,25 +159,16 @@ const EditJobForm = ({ job }: { job: any }) => {
 
         <div>
           <Label htmlFor="jobType">Job Type</Label>
-          <Select
+          <select
             {...register("jobType")}
             defaultValue={jobObject.jobType}
-            onValueChange={(val) => {
-              if (val) {
-                setValue("jobType", val as "On-site" | "Hybrid" | "Remote");
-                trigger("jobType");
-              }
-            }}
+            className="w-full p-2 border rounded"
           >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Job Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="On-site">On-site</SelectItem>
-              <SelectItem value="Hybrid">Hybrid</SelectItem>
-              <SelectItem value="Remote">Remote</SelectItem>
-            </SelectContent>
-          </Select>
+            <option value="">Select Job Type</option>
+            <option value="On-site">On-site</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Remote">Remote</option>
+          </select>
           <p className="text-xs text-red-500">
             {errors.jobType && errors.jobType.message}
           </p>
@@ -202,53 +176,24 @@ const EditJobForm = ({ job }: { job: any }) => {
 
         <div>
           <Label htmlFor="category">Category</Label>
-          <Select
+          <select
             {...register("category")}
             defaultValue={jobObject.category}
-            onValueChange={(val) => {
-              if (val) {
-                setValue(
-                  "category",
-                  val as
-                    | "marketing"
-                    | "customer-service"
-                    | "human-resource"
-                    | "project-management"
-                    | "business-development"
-                    | "sales&communication"
-                    | "teaching&education"
-                    | "design&creative"
-                    | "information&technology"
-                );
-                trigger("category");
-              }
-            }}
+            className="w-full p-2 border rounded"
           >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="marketing">Marketing</SelectItem>
-              <SelectItem value="customer-service">Customer Service</SelectItem>
-              <SelectItem value="human-resource">Human Resource</SelectItem>
-              <SelectItem value="project-management">
-                Project Management
-              </SelectItem>
-              <SelectItem value="business-development">
-                Business Development
-              </SelectItem>
-              <SelectItem value="sales&communication">
-                Sales & Communication
-              </SelectItem>
-              <SelectItem value="teaching&education">
-                Teaching & Education
-              </SelectItem>
-              <SelectItem value="design&creative">Design & Creative</SelectItem>
-              <SelectItem value="information&technology">
-                Information & Technology
-              </SelectItem>
-            </SelectContent>
-          </Select>
+            <option value="">Select Category</option>
+            <option value="marketing">Marketing</option>
+            <option value="customer-service">Customer Service</option>
+            <option value="human-resource">Human Resource</option>
+            <option value="project-management">Project Management</option>
+            <option value="business-development">Business Development</option>
+            <option value="sales&communication">Sales & Communication</option>
+            <option value="teaching&education">Teaching & Education</option>
+            <option value="design&creative">Design & Creative</option>
+            <option value="information&technology">
+              Information & Technology
+            </option>
+          </select>
           <p className="text-xs text-red-500">
             {errors.category && errors.category.message}
           </p>

@@ -1,6 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import EditJobForm from "@/components/jobs/EditJobForm";
+
+import dynamic from "next/dynamic";
+
+const EditJobForm = dynamic(() => import("@/components/jobs/EditJobForm"), {
+  ssr: false,
+});
+// import EditJobForm from "@/components/jobs/EditJobForm";
 import Jobss from "@/server/models/job";
 import connectDB from "@/server/utils/ConnectDB";
 
